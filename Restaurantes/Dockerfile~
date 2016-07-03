@@ -3,30 +3,34 @@ maintainer jmgn@correo.ugr.es
 
 # variables de ambiente
 #     código (solo lectura)
-env project_dir /Pruebas_django/
+env project_dir /Restaurantes/
 #     datos: MEDIA_ROOT, db.sqlite (lectura y escritura)
-env volume_dir /var/Volumes/Project_django
+env volume_dir /var/Volumes/Restaurantes
 
 run apt-get -y update
 
-# lo mínimo para django
+# Herramintas para django
 run apt-get install -y apt-utils
 run apt-get install -y python python-dev python-setuptools
 
-# para instalar pip
+# MongoDB
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+RUN echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.0 main" | tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+
+# Pip
 run apt-get install -y git                                                                                             
 run easy_install -U pip    
 
-# donde va a estar la aplicación
+# Directorio donde instalar la aplicación
 add . ${project_dir}
 workdir $project_dir
 
-run pip install -r requeriments.txt
+run pip install -r requirements.txt
 
 # PRODUCCION
 run pip install gunicorn
 
-# servidor web y watchdog
+# Servidor web y watchdog
 run apt-get install -y supervisor nginx
 
 #  configuraciones
