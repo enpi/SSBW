@@ -41,5 +41,5 @@ run sed -i 's/DEBUG = True/DEBUG= False/' Restaurantes/settings.py
 
 expose 80
 
-RUN chmod +x despliegue/collect_static.sh
+RUN chmod +x deploy/collect_static.sh
 cmd deploy/collect_static.sh && supervisord
