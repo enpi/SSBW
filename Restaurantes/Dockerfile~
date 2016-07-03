@@ -1,0 +1,40 @@
+from debian:jessie
+maintainer jmgn@correo.ugr.es
+
+# variables de ambiente
+#     código (solo lectura)
+env project_dir /Pruebas_django/
+#     datos: MEDIA_ROOT, db.sqlite (lectura y escritura)
+env volume_dir /var/Volumes/Project_django
+
+run apt-get -y update
+
+# lo mínimo para django
+run apt-get install -y apt-utils
+run apt-get install -y python python-dev python-setuptools
+
+# para instalar pip
+run apt-get install -y git                                                                                             
+run easy_install -U pip    
+
+# donde va a estar la aplicación
+add . ${project_dir}
+workdir $project_dir
+
+run pip install -r requeriments.txt
+
+# PRODUCCION
+run pip install gunicorn
+
+# servidor web y watchdog
+run apt-get install -y supervisor nginx
+
+#  configuraciones
+run cp  despliegue/supervisor.conf /etc/supervisor/conf.d/
+run cp  despliegue/nginx-default /etc/nginx/sites-available/default
+
+run sed -i 's/DEBUG = True/DEBUG= False/' Pruebas_django/settings.py
+
+expose 80
+
+cmd despliegue/collect_static.sh && supervisord

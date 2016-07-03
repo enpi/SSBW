@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Práctica 1 CC</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+
+<script type="text/javascript">
+
+    var myApp = angular.module('myApp',[]);
+
+    myApp.controller('Restaurantes', function($scope, $http) {
+			$http.get("/app_restaurantes/api/?format=json").then(function(response) {
+			      $scope.restaurantes = response.data;
+			}, function(e){
+				showMessage("Error!", "alert");
+			});
+
+			$scope.getRestaurantes = function(){
+				$http.get("/app_restaurantes/api/?format=json").then(function(response) {
+			      $scope.restaurantes = response.data;
+				}, function(e){
+					showMessage("Error!", "alert");
+				});
+			};
+			$scope.deleteRestaurante = function(id){
+				$http.delete("/app_restaurantes/api_resta/"+ id).then(function(response) {
+				    $scope.getRestaurantes();
+					alert("Restaurante borrado!");
+				}, function(e){
+					showMessage("Error!", "alert");
+				});
+			};
+			$scope.addRestaurante = function(name, description, image){
+
+				var data = {
+					"name": name,
+			        "description": description,
+			        "image": image,
+			        "likes": 0,
+				};
+				                console.log(data);
+
+				$http.post("/app_restaurantes/api_resta/", data).then(function(response) {
+					$scope.getRestaurantes();
+					alert("Restaurante añadido!");
+				}, function(e){
+					showMessage("Error!", "alert")
+				});
+			};
+			$scope.editRestaurante = function(id){
+                console.log($scope.restaurantes, id);
+
+                var restaurante;
+
+                angular.forEach($scope.restaurantes, function(value, key) {
+                   if(value.id == id)
+                        restaurante = value;
+                });
+
+				var data = {
+                    "id": id,
+					"name": restaurante.name,
+			        "description": restaurante.description,
+			        "image":restaurante.image,
+			        "likes":0,
+				};
+				$http.put("/app_restaurantes/api_resta/"+ id, data).then(function(response) {
+					alert("Restaurante editado!");
+					$scope.getRestaurants();
+				}, function(e){
+					alert("Error!");
+				});
+			};
+		});
+
+</script>
+
+
+</head>
+<body ng-app="myApp">
+
+{% verbatim %}
+
+    <div class="container theme-showcase" ng-controller="Restaurantes" ng-init="restaurantes=[]">
+        <div class="jumbotron">
+                <center><h1>API SSBW-Restaurantes</h1></center>
+        </div>
+
+
+
+        <div class="container" >
+                    <center><h2>Formulario</h2></center>
+                        <div class="form-group">
+                                <label for="name">Nombre:</label>
+                            <input type="text" ng-model="name" class="form-control" name="nic" id="name" autofocus required>
+                        </div>
+                        <div class ="form-group">
+                                <label for="description">Descripcion:</label>
+                                <input type="text" ng-model="description" class="form-control" name="email" id="description" required>
+                        </div>
+                        <div class="form-group">
+                                <label for="imagen">Imagen:</label>
+                                <input type="text" ng-model="image" class="form-control" name="imagen" id="imagen" required/>
+                        </div>
+                        <br />
+                        <button ng-click="addRestaurante(name, description, image)" type="submit" class="btn btn-success">Registrar</button>
+            </div>
+
+
+            <div class="container">
+                    <center><h2>Restaurantes  ({{ restaurantes.length }})</h2></center>
+                    <table class="table table-striped">
+                            <thead>
+                                    <tr>
+                                            <th>ID</th>
+                                            <th>Nombre</th>
+                                            <th>Descripcion</th>
+                                            <th>Imagen</th>
+                                    </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="r in restaurantes">
+                                    <td><input type="text" ng-model="r.id" required readonly></td>
+                                    <td><input type="text" ng-model="r.name"></td>
+                                    <td><input type="text" ng-model="r.description" required></td>
+                                    <td><input type="text" ng-model="r.image" required></td>
+                                    <td ng-click="editRestaurante(r.id)"><button type="submit" name="registrar" class="btn btn-warning">Editar</button></td>
+                                    <td ng-click="deleteRestaurante(r.id)"><button type="submit" name="registrar" class="btn btn-danger">Eliminar</button></td>
+                                </tr>
+                            </tbody>
+                    </table>
+            </div>
+    </div>
+
+{% endverbatim %}
+
+</body>
+</html>

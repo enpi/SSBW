@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSBW-Restaurantes</title>
+ 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/css/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/css/foundation.min.css">
+    <link href='http://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.css' rel='stylesheet' type='text/css'>
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/js/foundation.min.js"></script>
+
+    {% load staticfiles %}
+
+	<link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <!--<script src="{% static 'js/angular.min.js' %}"></script>-->
+    <!--<script src="{% static 'js/ui-bootstrap-tpls-1.3.2.min.js' %}"></script>-->
+
+</head>
+<body>
+
+{% block body_block %}
+<!-- Bloque de fallo para entrar o registrarse -->
+{% endblock %}
+
+
+
+<div id="login_modal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+  <h2 id="modalTitle">Login</h2>
+  <form method="post" action="/accounts/login/">
+        {% csrf_token %}
+        <label class="required" for="id_username">Nombre de usuario:</label> <input type="text" id="id_username" name="username"></input>
+        <label class="required" for="id_username">Contraseña:</label> <input type="password" id="id_password" name="password"></input>
+        <input class="button" type="submit" value="Entrar" />
+    </form>
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+<div id="register_modal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+  <h2 id="modalTitle">Registro</h2>
+  <form method="post" action="/accounts/register/">
+    {% csrf_token %}
+            <p class="required"><label class="required" for="id_username">Nombre de usuario:</label> <input id="id_username" maxlength="30" name="username" type="text">
+        <p class="required"><label class="required" for="id_email">E-mail:</label> <input id="id_email" name="email" type="email"></p>
+        <p class="required"><label class="required" for="id_password1">Contraseña:</label> <input id="id_password1" name="password1" type="password"></p>
+        <p class="required"><label class="required" for="id_password2">Confirmación de la contraseña:</label> <input id="id_password2" name="password2" type="password">
+            <input class="button" value="Registrarse" type="submit">
+        </form>
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+<div id="complain_modal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+  <h2>Contacto</h2>
+  <form method="post" action="">
+      {% csrf_token %}
+            <p class="required"><label class="required" for="id_username">Nombre de usuario:</label> <input id="id_username" maxlength="30" name="username" type="text">
+            <p class="required"><label class="required" for="id_email">E-mail:</label> <input id="id_email" name="email" type="email"></p>
+            <p class="required"><label class="required" for="id_description">Descripcion:</label> ​<textarea id="id_description" rows="6" cols="70"></textarea></p>
+            <input class="button" type="submit">
+        </form>
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+
+<div class="row">
+    <div class="large-3 columns">
+        <h1><img src="https://lh3.googleusercontent.com/-D7V-vfNzL68/VqkDdyGfELI/AAAAAAACDYs/gQw_K-FPqn4/s400-Ic42/restaurante_text.png"/></h1>
+    </div>
+
+    <div class="large-9 columns">
+        <ul class="right button-group">
+            {% if user.is_authenticated %}
+		     <li>Hola <strong>{{user.username}}</strong></li>
+		     <li><a href="{% url 'auth_logout' %}">Salir</a></li>
+		    {% else %}
+            <li><button type="button" class="button" data-reveal-id="login_modal">Login</button></li>
+            <li><button type="button" class="button" data-reveal-id="register_modal">Registro</button></li>
+
+            {% endif %}
+        </ul>
+    </div>
+</div>
+ 
+ 
+<div class="row">
+<div class="large-12 columns">
+<ul class="example-orbit" data-orbit>
+<li><img src="http://bnbwebsites.s3.amazonaws.com/3741/anchorage_restaurants_38.jpg" height="400" width="1000"></li>
+<li><img src="http://bnbwebsites.s3.amazonaws.com/3741/anchorage_restaurants_42.jpg" height="400" width="1000"></li>
+<li><img src="https://www.emeralddesert.com/wp-content/uploads/2012/08/dining-feat-1000x400.jpg" height="400" width="1000"></li>
+</ul>
+</div>
+</div>
+<hr/>
+ 
+<div class="row">
+
+<script>
+$(function(){
+	$('.likes').click(function(){
+	    var $this = $(this);
+	    var resId;
+	    resId = $(this).attr("data-resId");
+	    if($this.data('clicked')) {
+            alert("Ya has votado.");
+        }
+        else {
+             $this.data('clicked', true);
+             $.get('/app_restaurantes/like_restaurant/', {likes: resId}, function(data){
+               $('#'+resId).html(data);
+               alert("Voto positivo recibido \npuede continuar.");
+            });
+        }
+	});
+});
+</script>
+
+{% for r in restaurantes %}
+    <div class="large-4 columns">
+        <img src="{{r.image}}"/>
+        <h4>{{r.name}}</h4>
+        <p>{{r.description}}
+        {% if user.is_authenticated %}
+        <div class="likes" data-resId="{{r.id}}">
+				<div class="small button info" class="{{r.id}}" style="margin: 0 auto; width:310px;">
+					<div id="{{r.id}}">
+						{{r.likes}}
+					</div>
+                    <img src="http://icons.iconarchive.com/icons/iconsmind/outline/128/Like-icon.png" width="32px" height="32px">
+				</div>
+        </div>
+        {% else %}
+        <div data-reveal-id="login_modal">
+				<div class="small button info" class="{{r.id}}" style="margin: 0 auto; width:310px;">
+					<div id="{{r.id}}">
+						{{r.likes}}
+					</div>
+                    <img src="http://icons.iconarchive.com/icons/iconsmind/outline/128/Like-icon.png" width="32px" height="32px">
+				</div>
+        </div>
+        {% endif %}
+        </p>
+    </div>
+{% endfor %}
+
+</div>
+
+<hr>
+
+<div class="row">
+<div class="large-12 columns">
+<div class="panel">
+<h4>Contacto</h4>
+<div class="row">
+<div class="large-9 columns">
+<p>Si es una queja, cartita a sanidad, sino pincha aqui..</p>
+</div>
+<div class="large-3 columns" data-reveal-id="complain_modal">
+<a href="#" class="radius button right" >Contacta con nosotros!</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+ 
+<footer class="row">
+<div class="large-12 columns">
+<hr/>
+<div class="row">
+<div class="large-6 columns">
+<p>&copy; Copyright by <a href="http://www.github.com/enpi">enpi</a></p>
+</div>
+<div class="large-6 columns">
+<ul class="inline-list right">
+<li><a href="/app_restaurantes/api/">API-View RestFramework</a></li>
+<li><a href="/app_restaurantes/api_resta">API RestFramework</a></li>
+<li><a href="/app_restaurantes/api_propia">API Propia</a></li>
+</ul>
+</div>
+</div>
+</div>
+</footer>
+<script>
+      $(document).foundation();
+    </script>
+</body>
+</html>
+

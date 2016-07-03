@@ -1,0 +1,18 @@
+from models import Restaurante
+from django.http.response import JsonResponse
+from django.shortcuts import render
+
+# Create your views here.
+
+from django.http import HttpResponse
+
+restaurantes = Restaurante.objects
+
+def data_request(request):
+    data = 'Hola'
+    return JsonResponse(data, safe=False)
+
+
+def index(request):
+    context= {"mensaje": "restaurantes!", 'restaurantes': restaurantes}
+    return render(request, 'base.html', context)
