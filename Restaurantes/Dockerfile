@@ -34,10 +34,10 @@ run pip install gunicorn
 run apt-get install -y supervisor nginx
 
 #  configuraciones
-run cp  despliegue/supervisor.conf /etc/supervisor/conf.d/
-run cp  despliegue/nginx-default /etc/nginx/sites-available/default
+run cp  deploy/supervisor.conf /etc/supervisor/conf.d/
+run cp  deploy/default /etc/nginx/sites-available/default
 
-run sed -i 's/DEBUG = True/DEBUG= False/' Pruebas_django/settings.py
+run sed -i 's/DEBUG = True/DEBUG= False/' Restaurantes/settings.py
 
 expose 80
 
